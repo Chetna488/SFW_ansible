@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+
+    <settings>
+        <variables>
+            <var name="LOCATION_QUERY_BASE" val="/opt/engine"/>
+        </variables>
+    </settings>
+
+
+    <group name="location_query_group">
+        <processes>
+            <process name="location_query_main"/>
+        </processes>
+    </group>
+
+    <process name="location_query_main"
+             path="${LOCATION_QUERY_BASE}/bin"
+             directory="${LOCATION_QUERY_BASE}/bin"
+             cmd="locationquery" >
+        <envEntry var="LOCATION_QUERY_JAVA_XMS_ARG"         val="512m"/>
+        <envEntry var="LOCATION_QUERY_JAVA_XMX_ARG"         val="512m"/>
+        <envEntry var="LOCATION_QUERY_BASE_DIR"             val="/opt/engine"/>
+        <envEntry var="LOCATION_QUERY_NODE_ID"              val="{{ config_vars.VAR3 }}"/>
+        <envEntry var="LOCATION_QUERY_INSTANCE_ID"          val="01"/>
+        <envEntry var="LOCATION_QUERY_EWOK_NODE_ID"         val="2501"/>
+        <envEntry var="LOCATION_QUERY_HZ_PORT"              val="5705"/>
+        <envEntry var="LOCATION_QUERY_COMMAND_PORT"         val="62726"/>
+    </process>
+
+</pmd>

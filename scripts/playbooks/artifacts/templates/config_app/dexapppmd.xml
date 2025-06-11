@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+
+    <settings>
+        <variables>
+            <var name="DEX_BASE" val="/opt/engine"/>
+        </variables>
+    </settings>
+
+    <group name="dex">
+        <processes>
+            <process name="dex"/>
+        </processes>
+    </group>
+
+    <process name="dex"
+             path="${DEX_BASE}/bin"
+             dir="${DEX_BASE}/bin"
+             cmd="./dex">
+
+        <args>${DEX_BASE}/conf/dex.cfg</args>
+
+        <envEntry var="LD_LIBRARY_PATH" val="${DEX_BASE}/lib"/>
+        <envEntry var="DB_PRINT" val="0"/>
+        <envEntry var="DB_COMPDEBUG" val="0"/>
+        <envEntry var="DLVL_dex" val="0"/>
+        <envEntry var="DLOG_dex" val="${DEX_BASE}/logs/dex.log"/>
+    </process>
+
+</pmd>

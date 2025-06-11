@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<!-- SEE 'FIXME' for on site config -->
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <!-- Send logging to a file -->
+    <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
+        <!-- FIXME - this path may be wrong -->
+        <param name="File" value="/opt/engine/logs/hzConfigServer.log"/>
+        <param name="Append" value="true"/>
+        <param name="MaxFileSize" value="10MB"/>
+        <param name="MaxBackupIndex" value="10"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                   value="%d{yyyy-MM-dd HH:mm:ss,SSS} %c{1} %p - %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="STATSFILE" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="/opt/engine/logs/hzConfigServer-stats.log"/>
+        <param name="Append" value="true"/>
+        <param name="MaxFileSize" value="10MB"/>
+        <param name="MaxBackupIndex" value="10"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                   value="%d{yyyy-MM-dd HH:mm:ss},%m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                   value="%d{yyyy-MM-dd HH:mm:ss,SSS} %c{1} %p - %m%n"/>
+        </layout>
+    </appender>
+
+    <!-- General rule for all our classes -->
+    <logger name="com.evolvedintelligence" additivity="false">
+        <level value="info"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="STATS.HAZELCAST_CONFIG_SERVER" additivity="false">
+        <level value="info"/>
+        <appender-ref ref="STATSFILE"/>
+    </logger>
+
+    <!-- We could put this in a different file -->
+    <logger name="com.hazelcast" additivity="false">
+        <level value="info"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <!-- FIXME - this logger name must match
+       - the group name in
+       - hz-config-server.xml
+      -->
+    <logger name="eiconfig" additivity="false">
+        <level value="info"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="com.evolvedintelligence.common.cfgsrv.map.ADD" additivity="false">
+        <level value="info"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="com.evolvedintelligence.common.cfgsrv.map.REMOVE" additivity="false">
+        <level value="info"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="com.evolvedintelligence.common.cfgsrv.map.UPDATE" additivity="false">
+        <level value="info"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <!-- Default rule for all classes -->
+    <root>
+        <level value="info"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</log4j:configuration>

@@ -1,0 +1,92 @@
+---
+ - name: Update inventory
+   hosts: "localhost"
+   gather_facts: false
+
+   pre_tasks:
+     - name: Validate if controller host url is provided
+       fail:
+         msg: "[ERROR] controller_host information not provided !"
+       when:
+         - atlas is undefined
+         - atlas.atlasTowerUrl is undefined
+
+     - name: Validate if userName is provided
+       fail:
+         msg: "[ERROR] userName information not provided !"
+       when:
+         - userName is undefined
+
+     - name: Validate if inventory is provided
+       fail:
+         msg: "[ERROR] inventory information not provided !"
+       when:
+         - inventory_name is undefined
+
+   tasks:
+    - name: Create a new token using username/password
+      awx.awx.token:
+        controller_host: "{{ atlas.atlasTowerUrl }}"
+        scope: "write"
+        state: present
+        controller_username: "{{ userName }}"
+        controller_password: "{{ userPassword }}"
+        validate_certs: no
+
+    - name: Create localhost entry
+      awx.awx.host:
+        controller_host: "{{ atlas.atlasTowerUrl }}"
+        controller_oauthtoken: "{{ controller_token }}"
+        name: "localhost"
+        inventory: "{{ inventory_name }}"
+        state: present
+        validate_certs: no
+        variables:
+          ansible_connection: local
+
+    - name: Create local group
+      awx.awx.group:
+        controller_host: "{{ atlas.atlasTowerUrl }}"
+        controller_oauthtoken: "{{ controller_token }}"
+        name: "local"
+        inventory: "{{ inventory_name }}"
+        state: present
+        validate_certs: no
+        hosts:
+          - localhost
+
+    - name: Create host entry in Inventory
+      awx.awx.host:
+        controller_host: "{{ atlas.atlasTowerUrl }}"
+        controller_oauthtoken: "{{ controller_token }}"
+        name: "{{ item.appName }}"
+        inventory: "{{ inventory_name }}"
+        state: present
+        validate_certs: no
+        variables:
+          ansible_host: "{{ item.ansible_ssh_host }}"
+          ansible_ssh_host: "{{ item.ansible_ssh_host }}"
+      with_items: "{{ siteinfo }}"
+
+    - name: Create groups
+      awx.awx.group:
+        controller_host: "{{ atlas.atlasTowerUrl }}"
+        controller_oauthtoken: "{{ controller_token }}"
+        name: "{{ item.group }}"
+        inventory: "{{ inventory_name }}"
+        state: present
+        validate_certs: no
+      with_items: "{{ siteinfo }}"
+
+    - name: Update groups
+      awx.awx.group:
+        controller_host: "{{ atlas.atlasTowerUrl }}"
+        controller_oauthtoken: "{{ controller_token }}"
+        name: "{{ item.group }}"
+        inventory: "{{ inventory_name }}"
+        state: present
+        validate_certs: no
+        preserve_existing_hosts: yes
+        hosts:
+          - "{{ item.appName }}"
+      with_items: "{{ siteinfo }}"

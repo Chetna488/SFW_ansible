@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <!-- ************************************************************************** -->
+    <!-- *     STATS_FILE                                                         * -->
+    <!-- *                                                                        * -->
+    <!-- *  Rate Limit Store statistics.                                          * -->
+    <!-- ************************************************************************** -->
+    <appender name="STATS_FILE" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="${RATE_LIMIT_STORE_BASE_DIR}/logs/rate-limit-store-stats.log" />
+        <param name="Append" value="true" />
+        <param name="MaxFileSize" value="10MB" />
+        <param name="MaxBackupIndex" value="3" />
+        <layout class="org.apache.log4j.PatternLayout">
+             <param name="ConversionPattern" value="%d{dd/MM/yyyy HH:mm:ss.SSS zzz},%m%n"/>
+        </layout>
+    </appender>
+
+    <!-- ************************************************************************** -->
+    <!-- *     CONSOLE    -   Application Messages                                * -->
+    <!-- ************************************************************************** -->
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <param name="Target" value="System.out" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %c{1} %p - %m%n" />
+        </layout>
+    </appender>
+
+    <!-- ************************************************************************** -->
+    <!-- *     FILE       -   Application Messages                                * -->
+    <!-- ************************************************************************** -->
+    <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="${RATE_LIMIT_STORE_BASE_DIR}/logs/rate-limit-store.log" />
+        <param name="Append" value="true" />
+        <param name="MaxFileSize" value="10MB" />
+        <param name="MaxBackupIndex" value="10" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{dd/MM/yyyy HH:mm:ss,SSS} %c{1} %p - %m%n" />
+        </layout>
+    </appender>
+
+    <!-- ************************************************************************** -->
+    <!-- *     STATS.RATE_LIMIT_STORE                                             * -->
+    <!-- *                                                                        * -->
+    <!-- *  Signalling Firewall Rate Limit store events statistics                * -->
+    <!-- ************************************************************************** -->
+    <logger name="STATS.RATE_LIMIT_STORE" additivity="false">
+        <level value="info" />
+        <appender-ref ref="STATS_FILE" />
+    </logger>
+
+    <!-- Specific rule for this module -->
+    <logger name="com.evolvedintelligence.engine.sigfirewall.ratelimitstore" additivity="false">
+        <level value="info" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <!-- Bucket store -->
+    <logger name="com.evolvedintelligence.libs.bucketstore.hazelcast" additivity="false">
+        <level value="info" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <!-- EWOK messages -->
+    <logger name="com.evolvedintelligence.engine.ewok" additivity="false">
+        <level value="off" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <!-- Hazelcast -->
+    <logger name="com.hazelcast" additivity="false">
+        <level value="info"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <!-- Default rule for all classes -->
+    <root>
+        <level value="info"/>
+        <appender-ref ref="FILE" />
+    </root>
+
+</log4j:configuration>

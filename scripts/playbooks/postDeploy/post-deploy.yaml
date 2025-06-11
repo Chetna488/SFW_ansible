@@ -1,0 +1,13 @@
+---
+ - name: Post deploy
+   hosts: "{{ host }}"
+   gather_facts: false
+   vars:
+     host: "{{ heat_env| map(attribute='parameter_defaults.name') }}"
+     parameter_defaults: "{{ (heat_env|selectattr('envfile', 'search', inventory_hostname)|list|first).parameter_defaults }}"
+
+   tasks:  
+     - name: Post deploy
+       include_role:
+         name: post-deploy
+

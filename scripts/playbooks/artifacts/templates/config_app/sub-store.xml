@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evol
+ved-intelligence-pmd-v2.xsd">
+
+    <settings>
+        <variables>
+            <var name="CFG_SRV_BASE" val="/opt/engine"/>
+        </variables>
+    </settings>
+
+
+    <group name="sub_store_group">
+        <processes>
+            <process name="sub_store_main"/>
+        </processes>
+    </group>
+
+    <process name="sub_store_main"
+             path="${CFG_SRV_BASE}/bin"
+             directory="${CFG_SRV_BASE}/bin"
+             cmd="substore" >
+        <envEntry var="SUB_STORE_JAVA_XMS_ARG"         val="4096m"/>
+        <envEntry var="SUB_STORE_JAVA_XMX_ARG"         val="4096m"/>
+        <envEntry var="SUB_STORE_BASE_DIR"             val="/opt/engine"/>
+        <envEntry var="SUB_STORE_NODE_ID"              val="{{ config_vars.VAR3 }}"/>
+        <envEntry var="SUB_STORE_INSTANCE_ID"          val="01"/>
+        <envEntry var="SUB_STORE_EWOK_NODE_ID"         val="3401"/>
+        <envEntry var="SUB_STORE_HZ_PORT"              val="5702"/>
+        <envEntry var="SUB_STORE_COMMAND_PORT"         val="62707"/>
+    </process>
+
+</pmd>

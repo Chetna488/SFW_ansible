@@ -1,0 +1,147 @@
+---
+ - name: Running deploy validation tasks
+   hosts: "{{ host }}"
+   gather_facts: true
+   vars:
+     parameter_defaults: "{{ (heat_env|selectattr('envfile', 'search', inventory_hostname)|list|first).parameter_defaults }}"
+     host: "{{ heat_env| map(attribute='parameter_defaults.name') }}"
+
+   tasks:
+     - name: Check hostname
+       fail:
+         msg: "Required hostname = {{ parameter_defaults.hostname }}, Actual hostname = {{ ansible_hostname }}"
+       when: ansible_hostname != parameter_defaults.hostname
+   
+     - name: Verify IP
+       shell: |
+         printf "\n\n#############################Verify IP Details#######################\n"
+         ifconfig -a
+   
+     - name: Verify EDNv6
+       debug:
+         msg: "{{ ansible_eth0.ipv6[0].address | ansible.utils.ipv6 }}"
+       failed_when: parameter_defaults.edn_tenant_v6_fixed_ip | ansible.utils.ipv6 != ansible_eth0.ipv6[0].address | ansible.utils.ipv6
+
+     - name: Verify EDNv4
+       debug:
+         msg: "{{ ansible_eth0.ipv4.address }}"
+       failed_when: parameter_defaults.edn_tenant_v4_fixed_ip != ansible_eth0.ipv4.address
+       when:
+         - ('vnf_NIF' in group_names)
+   
+     - name: Verify SSN1
+       debug:
+         msg: "{{ ansible_eth1.ipv4.address }}"
+       failed_when: parameter_defaults.ssn1_tenant_v4_fixed_ip != ansible_eth1.ipv4.address
+       when:
+         - ('vnf_NIF' in group_names)
+   
+     - name: Verify SSN2
+       debug:
+         msg: "{{ ansible_eth2.ipv4.address }}"
+       failed_when: parameter_defaults.ssn2_tenant_v4_fixed_ip != ansible_eth2.ipv4.address
+       when:
+         - ('vnf_NIF' in group_names)
+   
+     - name: Verify RAN
+       debug:
+         msg: "{{ ansible_eth3.ipv6[0].address | ansible.utils.ipv6 }}"
+       failed_when: parameter_defaults.ran_tenant_v6_fixed_ip | ansible.utils.ipv6 != ansible_eth3.ipv6[0].address | ansible.utils.ipv6
+       when:
+         - ('vnf_NIF' in group_names)
+   
+     - name: Collect Routes
+       shell: |
+         printf "\n\n#############################Output of IP Routes #######################\n"
+         printf "\n\n###Output of IPv6 Default Routes ###\n"
+         ip -6 route show | grep default
+         printf "\n\n###Output of route ###\n"
+         route
+   
+     - name: Collecting NTP
+       shell: |
+         printf "\n\n#############################chronyc sources#######################\n"
+         chronyc sources
+   
+     - name: Collecting VM Logs
+       shell: |
+         printf "\n\n####################Output of /var/log/messages##############\n"
+         cat /var/log/messages | grep -i err |grep -v ansible-command
+         printf "\n\n####################Output of /var/log/rw-init-err.log##############\n"
+         cat /var/log/rw-init-err.log | egrep -i "No|Not"
+         printf "\n\n####################Output of /var/log/heat-provision.log##############\n"
+         cat /var/log/heat-provision.log | egrep -i "mount|done"
+         printf "\n\n####################Output of /var/log/cloud-init.log##############\n"
+         cat /var/log/cloud-init.log | egrep -i "mount|done"
+         printf "\n\n####################Output of /etc/hosts##############\n"
+         cat /etc/hosts
+         printf "\n\n####################Output of /etc/chrony.conf##############\n"
+         cat /etc/chrony.conf | egrep -i "allow|server"
+   
+     - name: Output /etc/fstab
+       shell: |
+         printf "\n\n####################Output of /etc/fstab##############\n"
+         cat /etc/fstab
+   
+     - name: Output Crontab of engine
+       shell: |
+         printf "\n\n####################Output of crontab -u engine -l ##############\n"
+         crontab -u engine -l
+       register: result
+       failed_when: ( result.rc not in [ 0, 1 ] )
+   
+     - name: "List of Disk Partitions"
+       shell: |
+         printf "\n\n####################Output of df -kh##############\n"
+         df -kh
+   
+     - name: Verify external paritition mounted
+       fail:
+         msg: "/opt/engine/external is not mounted"
+       when: 
+         - ansible_mounts|selectattr('mount', 'equalto', '/opt/engine/external')|length != 1
+         - ('vnf_APP' in group_names or
+           'vnf_MC' in group_names or
+           'vnf_NIF' in group_names)
+   
+     - name: Verify external paritition mounted
+       fail:
+         msg: "/opt/engine/external1 is not mounted"
+       when: 
+         - ansible_mounts|selectattr('mount', 'equalto', '/opt/engine/external1')|length != 1
+         - ('vnf_INT' in group_names)
+
+     - name: Verify external paritition mounted
+       fail:
+         msg: "/opt/engine/external2 is not mounted"
+       when: 
+         - ansible_mounts|selectattr('mount', 'equalto', '/opt/engine/external2')|length != 1
+         - ('vnf_INT' in group_names)
+
+     - name: Verify external paritition mounted
+       fail:
+         msg: "/opt/engine/external3 is not mounted"
+       when: 
+         - ansible_mounts|selectattr('mount', 'equalto', '/opt/engine/external3')|length != 1
+         - ('vnf_INT' in group_names)
+
+     - name: Verify external paritition mounted
+       fail:
+         msg: "/opt/engine/raid is not mounted"
+       when: 
+         - ansible_mounts|selectattr('mount', 'equalto', '/opt/engine/raid')|length != 1
+         - ('vnf_RAID' in group_names)
+
+     - name: Verify external paritition mounted
+       fail:
+         msg: "/var/lib/pgslq is not mounted"
+       when: 
+         - ansible_mounts|selectattr('mount', 'equalto', '/var/lib/pgsql')|length != 1
+         - ('vnf_RAID' in group_names)
+
+     - name: "Gathering fdisk details"
+       shell: |
+         printf "\n\n####################Output of fdisk -l  ##############\n"
+         fdisk -l
+         printf "\n\n#################END TIME `date` ########################\n\n\n"
+   

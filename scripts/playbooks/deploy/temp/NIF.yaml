@@ -1,0 +1,188 @@
+heat_template_version: 2016-10-14
+
+description: >
+   HOT template (Heat Orchestration Template) for EINIF
+
+#####################################
+## Parameters part
+######################################
+
+parameters:
+  # VM Resource
+  name:
+    type: string
+    label: Name
+    description: Name of Instance
+
+  image_id:
+    type: string
+    label: Image ID
+    description: Image to be used for compute instance
+
+  flavor:
+    type: string
+    label: Instance Type
+    description: Type of instance (flavor) to be used
+
+  volume_id:
+    type: string
+    label: Volume ID
+    description: Volume ID .
+
+  server_group:
+    type: string
+    label: Server Group
+    description: server group
+
+##############################
+  # New Ports
+#############################
+
+  ssn1_port_id:
+    type: string
+    label: ssn1 port
+    description: port details for our instance
+
+  ssn2_port_id:
+    type: string
+    label: ssn2 port
+    description: port details for our instance
+
+  ran_port_id:
+    type: string
+    default: ""
+    label: ran port
+    description: port details for our instance
+
+  edn_port_id:
+    type: string
+    label: edn port
+    description: port details for our instance
+    
+  
+ #########################################
+  # Network Interface
+ #########################################
+
+  edn_tenant_v4_GATEWAY:
+    type: string
+    label: EDN IP gateway
+    description: Network gateway  
+    
+  edn_tenant_v4_Netmask:
+    type: string
+    label: EDN IP netmask
+    description: Network netmask 
+
+  edn_tenant_v6_IPV6_DEFAULTGW:
+    type: string
+    label: EDN IPv6 Gateway
+    description: Network gateway 
+
+
+  edn_tenant_v4_fixed_ip:
+    type: string
+    label: edn IPv4 fixed ip
+    description: private static IP
+
+  edn_tenant_v6_fixed_ip:
+    type: string
+    label: edn IPv6 IP 
+    description: private static IP
+
+  ssn1_tenant_v4_GATEWAY:
+    type: string
+    label: ssn1 ipv4 Gateway
+    description: Network gateway . 
+    
+  ssn1_tenant_v4_Netmask:
+    type: string
+    label: ssn1 IPv4 Netmask
+    description: Network netmask .
+
+  ssn1_tenant_v4_fixed_ip:
+    type: string
+    label: ssn1 IPV4 FIXED IP
+    description: private static IP
+    
+  ssn2_tenant_v4_GATEWAY:
+    type: string
+    label: SSN2 IPv4 Gateway
+    description: Network gateway . 
+    
+  ssn2_tenant_v4_Netmask:
+    type: string
+    label: SSN2 IPv4 Netmask
+    description: Network netmask .
+
+  ssn2_tenant_v4_fixed_ip:
+    type: string
+    label: ssn2 private fixed IP
+    description: private static IP
+  
+  ran_tenant_v6_IPV6_DEFAULTGW:
+    type: string
+    label: ran IPv6 Gateway
+    default: ""
+    description: Network gateway 
+    
+  ran_tenant_v6_fixed_ip:
+    type: string
+    label: ran IPv6 private fixed IP
+    default: ""
+    description: private static IP
+     
+    
+conditions:
+  create_ran_port:
+    not:
+      equals: [{get_param: ran_port_id}, ""]
+
+resources:
+#<<<<<<<--------------------->>>>>>>>>
+  my_vm1:
+    type: OS::Nova::Server
+    properties:
+      name: { get_param: name }
+      image: { get_param: image_id }
+      flavor: { get_param: flavor }
+      scheduler_hints: { group: { get_param: server_group } }
+      config_drive: true
+      networks:
+        if:
+        - "create_ran_port"
+        - - port: { get_param: edn_port_id }
+          - port: { get_param: ssn1_port_id }
+          - port: { get_param: ssn2_port_id }
+          - port: { get_param: ran_port_id }
+        - - port: { get_param: edn_port_id }
+          - port: { get_param: ssn1_port_id }
+          - port: { get_param: ssn2_port_id }
+      user_data_format: RAW
+      user_data:
+        str_replace:
+          template: |
+               #!/bin/sh
+               printf "DEVICE=eth0\nBOOTPROTO=static\nONBOOT=yes\nTYPE=Ethernet\nUSERCTL=no\nIPADDR=$edn_tenant_v4_fixed_ip\nNETMASK=$edn_tenant_v4_Netmask\nGATEWAY=$edn_tenant_v4_GATEWAY\nIPV6INIT=yes\nIPV6ADDR=$edn_tenant_v6_fixed_ip\nIPV6_DEFAULTGW=$edn_tenant_v6_IPV6_DEFAULTGW\n" > /etc/sysconfig/network-scripts/ifcfg-eth0
+          
+               systemctl restart network
+               sed -i 's/^PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+               systemctl restart sshd
+
+
+          params:
+                $edn_tenant_v4_GATEWAY: { get_param: edn_tenant_v4_GATEWAY}
+                $edn_tenant_v4_Netmask: { get_param: edn_tenant_v4_Netmask}
+                $edn_tenant_v6_IPV6_DEFAULTGW: {get_param: edn_tenant_v6_IPV6_DEFAULTGW}
+                $edn_tenant_v6_fixed_ip: {get_param: edn_tenant_v6_fixed_ip}
+                $edn_tenant_v4_fixed_ip: {get_param: edn_tenant_v4_fixed_ip}
+
+
+####################################
+# volume attachment part
+####################################
+  volume_attachment:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_param: volume_id }
+      instance_uuid: { get_resource: my_vm1 }

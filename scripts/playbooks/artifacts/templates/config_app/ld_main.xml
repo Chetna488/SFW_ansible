@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+
+    <group name="ld_group">
+        <processes>
+            <process name="ld_main"/>
+        </processes>
+    </group>
+
+    <process name="ld_main"
+             importSystemEnvironment="true"
+             path="/opt/engine/bin"
+             cmd="loaddirector">
+    </process>
+
+</pmd>

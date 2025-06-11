@@ -1,0 +1,17 @@
+{
+  "appList" :
+  [
+    {
+      "appPath" : "/opt/engine/bin/diameterfw-dif",
+      "appJarPath" : "/opt/engine/jars/",
+      "serverJarName" : "diameter-sctp-stack",
+      "rmiPortNumber" : 61432
+    },
+    {
+      "appPath" : "/opt/engine/bin/diameterfw-dif",
+      "appJarPath" : "/opt/engine/jars/",
+      "serverJarName" : "dif-main",
+      "rmiPortNumber" : 62345
+    }
+  ]
+}

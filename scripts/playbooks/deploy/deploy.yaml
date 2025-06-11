@@ -1,0 +1,168 @@
+ - name: Deploy stack
+   hosts: local
+   become: false
+   gather_facts: false
+   vars:
+     config_file: "{{ lookup('env', 'OS_CLIENT_CONFIG_FILE') }}"
+     allowed_vnfs:
+      - NFS
+      - MC
+      - APP
+      - NIF
+      - RAID
+      - INT
+
+   pre_tasks:
+
+    - name: Check if instantiation_params is present
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+      fail:
+        msg: "Missing instantiation_params or format not correct"
+      when: 
+        - instantiation_params is not defined or instantiation_params.vnf is not defined or instantiation_params.num is not defined or instantiation_params.sharedPath is not defined
+      
+    - name: Check if heat_env is present
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+      fail:
+        msg: "Missing heat_env parameter"
+      when: heat_env is not defined
+      
+    - name: Check if siteinfo is present
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+      fail:
+        msg: "Missing siteinfo parameter"
+      when: siteinfo is not defined and instantiation_params.vnf == 'NFS'
+      
+    - name: Make sure VNF is allowed
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+      fail:
+        msg: >-
+          "{{ instantiation_params.vnf }}" is not allowed.
+          Please choose a VNF in "{{ allowed_vnfs | join(', ') }}"
+      when: not instantiation_params.vnf in allowed_vnfs
+      run_once: true
+
+    - name: Set default value for checkNFS parameter
+      set_fact:
+        checkNFS: true
+      when: checkNFS is undefined
+
+#    - name: Get max num file
+#      vars:
+#        ansible_python_interpreter: /usr/bin/python
+#      fetch:
+#        src: /opt/engine/external/max_vm.ini
+#        dest: max_vm.ini
+#      register: location
+#      remote_user: roamware
+#      delegate_to: NFS01
+#      when: 
+#        - checkNFS == true
+#        - instantiation_params.vnf != 'NFS'
+
+#    - name: Create an empty file on remote server
+#      ansible.builtin.file:
+#        path: /opt/engine/external/myfile.txt
+#        state: touch
+#        mode: '0644'
+#      remote_user: root
+#      delegate_to: NFS01
+#      when:
+#        - checkNFS == true
+#        - instantiation_params.vnf != 'NFS'
+
+
+    - name: Get max num file
+      fetch:
+        src: /opt/engine/external/max_vm.ini
+        dest: max_vm.ini
+      register: location
+      remote_user: root
+      delegate_to: NFS01
+      when:
+        - checkNFS == true
+        - instantiation_params.vnf != 'NFS'
+
+    - name: Get max num value
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+      set_fact:
+        max_num: "{{ lookup('ansible.builtin.ini', 'max_num', section= instantiation_params.vnf, file=location['dest'] ) }}"
+      when: 
+        - checkNFS == true
+        - instantiation_params.vnf != 'NFS'
+
+    - name: Check number of instances
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+      fail:
+        msg: "Requested instances: {{ instantiation_params.num }}, Max allowed: {{ max_num }}"
+      when: 
+        - checkNFS == true
+        - instantiation_params.vnf != 'NFS' and instantiation_params.num|int > max_num|int
+
+    - name: Check number of environment files
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+      fail:
+        msg: "Environment files shared for {{ instantiation_params.vnf }} = {{ heat_env| selectattr('envfile', 'search', instantiation_params.vnf)|length }}, Value passed in instantiation_params.num = {{ instantiation_params.num }}"
+      when: heat_env| selectattr('envfile', 'search', instantiation_params.vnf)|length != instantiation_params.num
+
+   tasks:
+
+     - name: Build environment files list
+       set_fact:
+         envfile_list: "{{ heat_env|map('json_query','{envfile:envfile}')}}"
+
+     - name: Undeploy Stack if present
+       vars:
+         ansible_python_interpreter: /usr/bin/python3
+         name: "{{ item.envfile|regex_search('env_(.*).yaml', '\\1')|first}}"
+       openstack.cloud.stack:
+         name: "{{ name }}"
+         state: absent
+       with_items: "{{ envfile_list }}"
+        
+     - name: Create folder for each application on shared drive to save env files
+       file:
+         path: "{{instantiation_params.sharedPath}}/{{item.parameter_defaults.name}}"
+         state: directory
+       with_items: "{{ heat_env }}"
+
+     - name: Extract environment files
+       vars:
+         ansible_python_interpreter: /usr/bin/python3
+       copy:
+         dest: "{{instantiation_params.sharedPath}}/{{item.parameter_defaults.name}}/{{item.envfile}}"
+         content: "{{ {'parameter_defaults' : item.parameter_defaults} | to_nice_yaml }}"
+       with_items: "{{ heat_env }}"
+
+     - name: Deploy Stack
+       vars:
+         ansible_python_interpreter: /usr/bin/python3
+         name: "{{ item.envfile|regex_search('env_(.*).yaml', '\\1')|first}}"
+       openstack.cloud.stack:
+         name: "{{ name }}"
+         state: present
+         template: "{{ name[:-3] }}.yaml"
+         environment:
+           - "{{instantiation_params.sharedPath}}/{{name}}/env_{{name}}.yaml"
+       with_items: "{{ envfile_list }}"
+
+
+#     - name: Deploy Stack
+#       vars:
+#         ansible_python_interpreter: /usr/bin/python3
+#         name: "{{ item.envfile|regex_search('env_(.*).yaml', '\\1')|first}}"
+#       openstack.cloud.stack:
+#         name: "{{ name }}"
+#         state: present
+#         template: "{{ name[:-2] }}.yaml"
+#         environment:
+#           - "{{instantiation_params.sharedPath}}/{{name}}/env_{{name}}.yaml"
+#       with_items: "{{ envfile_list }}"
+

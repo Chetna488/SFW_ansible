@@ -1,0 +1,10 @@
+version: '1.0'
+services:
+  mob-sfw-ee:
+    build:
+      context: context/
+      dockerfile: Dockerfile
+      network: host
+    extra_hosts:
+      - "controller:172.16.56.91"
+    image: azaliodev/mob-sfw-ee:1.0

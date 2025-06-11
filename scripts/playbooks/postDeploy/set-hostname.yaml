@@ -1,0 +1,14 @@
+---
+ - name: Set hostname
+   hosts: "{{ heat_env| map(attribute='parameter_defaults.name') }}"
+   gather_facts: false
+   vars:
+     parameter_defaults: "{{ (heat_env|selectattr('envfile', 'search', inventory_hostname)|list|first).parameter_defaults }}"
+       
+   tasks:
+    - name: Wait for ssh
+      wait_for_connection:
+
+    - name: Set the hostname
+      ansible.builtin.hostname:
+        name: "{{ parameter_defaults.hostname }}"

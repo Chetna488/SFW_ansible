@@ -1,0 +1,15 @@
+parameter_defaults:
+#Global
+  edn_tenant_v6_IPV6_DEFAULTGW:
+  nfs_server:
+
+#VM specific
+  name:
+  hostname:
+  edn_tenant_v6_fixed_ip:
+  flavor:
+  image_id:
+  volume_id:
+
+#Network Ports
+  edn_port_id:

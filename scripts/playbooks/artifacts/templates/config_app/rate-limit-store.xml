@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+
+    <settings>
+        <variables>
+            <var name="CFG_SRV_BASE" val="/opt/engine"/>
+        </variables>
+    </settings>
+
+
+    <group name="rate_limit_store_group">
+        <processes>
+            <process name="rate_limit_store_main"/>
+        </processes>
+    </group>
+
+    <process name="rate_limit_store_main"
+             path="${CFG_SRV_BASE}/bin"
+             directory="${CFG_SRV_BASE}/bin"
+             cmd="ratelimitstore" >
+        <envEntry var="RATE_LIMIT_STORE_JAVA_XMS_ARG"         val="512m"/>
+        <envEntry var="RATE_LIMIT_STORE_JAVA_XMX_ARG"         val="512m"/>
+        <envEntry var="RATE_LIMIT_STORE_NODE_ID"              val="app01"/>
+        <envEntry var="RATE_LIMIT_STORE_INSTANCE_ID"          val="01"/>
+        <envEntry var="RATE_LIMIT_STORE_EWOK_NODE_ID"         val="4401"/>
+        <envEntry var="RATE_LIMIT_STORE_HZ_PORT"              val="5710"/>
+    </process>
+
+</pmd>

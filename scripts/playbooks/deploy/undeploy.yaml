@@ -1,0 +1,55 @@
+ - name: Undeploy stack
+   hosts: local
+   become: false
+   gather_facts: false
+   vars:
+     config_file: "{{ lookup('env', 'OS_CLIENT_CONFIG_FILE') }}"
+     allowed_vnfs:
+      - NFS
+      - MC
+      - APP
+      - NIF
+      - RAID
+      - INT
+
+   pre_tasks:
+    - name: Check if undeploy_params is present
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+      fail:
+        msg: "Missing undeploy_params or format not correct"
+      when: 
+        - undeploy_params is not defined or undeploy_params.vnf is not defined
+      
+    - name: Make sure VNF is allowed
+      fail:
+        msg: >-
+          "{{ undeploy_params.vnf }}" is not allowed.
+          Please choose a VNF in "{{ allowed_vnfs | join(', ') }}"
+      when: not undeploy_params.vnf in allowed_vnfs
+      run_once: true
+
+   tasks:
+     - name: Get current stack status
+       openstack.cloud.stack_info:
+       register: stack_info
+
+     - name: Get current instance for {{ undeploy_params.vnf }}
+       vars:
+         query: "stacks[?name.starts_with(@, '{{ undeploy_params.vnf }}')]|length(@)"
+       set_fact:
+         cur_num: "{{ stack_info | json_query(query)}}"
+
+     - name: Undeploy Stack if present
+       openstack.cloud.stack:
+         name: "{{ undeploy_params.vnf }}{{ '%03d' % undeploy_params.stack_number }}"
+         state: absent
+       when: undeploy_params.stack_number is defined
+
+#     - name: Undeploy Stack if present
+#       openstack.cloud.stack:
+#         name: "{{ name }}"
+#         state: absent
+#       vars:
+#         name: "{{ undeploy_params.vnf }}{{ '%02d' % item|int }}"
+#       with_sequence: start=1 end={{cur_num}}

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+
+    <settings>
+        <variables>
+            <var name="CFG_SRV_BASE" val="/opt/engine"/>
+        </variables>
+    </settings>
+
+
+    <group name="sigfirewall1">
+        <processes>
+            <process name="sigfirewall1"/>
+        </processes>
+    </group>
+
+    <process name="sigfirewall1"
+             path="${CFG_SRV_BASE}/bin"
+             directory="${CFG_SRV_BASE}/bin"
+             cmd="sigfirewall" >
+        <envEntry var="SIG_FIREWALL_JAVA_XMS_ARG"         val="4096m"/>
+        <envEntry var="SIG_FIREWALL_JAVA_XMX_ARG"         val="4096m"/>
+        <envEntry var="SIG_FIREWALL_BASE_DIR"             val="/opt/engine"/>
+        <envEntry var="SIG_FIREWALL_NODE_ID"              val="app01"/>
+        <envEntry var="SIG_FIREWALL_INSTANCE_ID"          val="01"/>
+        <envEntry var="SIG_FIREWALL_EWOK_NODE_ID"         val="2801"/>
+        <envEntry var="SIG_FIREWALL_RATE_LIMIT_HZ_PORT"   val="5711"/>
+    </process>
+
+</pmd>

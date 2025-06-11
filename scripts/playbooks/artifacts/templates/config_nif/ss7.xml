@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+    <settings>
+        <variables>
+            <var name="ENGINE_BASE"   val="/opt/engine" />
+            <var name="TELESOFT_BASE"   val="/opt/NGNTdapi" />
+        </variables>
+    </settings>
+
+    <group name="ss7_0" importSystemEnvironment="true" lockstep="true">
+        <processes>
+            <process name="m3ua_0"/>
+            <process name="sccp_0"/>
+            <process name="sif_0"/>
+            <process name="mgmt_0"/>
+        </processes>
+    </group>
+    <group name="ss7_1" importSystemEnvironment="true" lockstep="true">
+        <processes>
+            <process name="m3ua_1"/>
+            <process name="sccp_1"/>
+            <process name="sif_1"/>
+            <process name="mgmt_1"/>
+        </processes>
+    </group>
+
+    <process name="m3ua_0" 
+        path="${ENGINE_BASE}/bin:${TELESOFT_BASE}/bin"
+        dir="${ENGINE_BASE}/bin"
+        cmd="m3uaStack0.sh">
+    </process>
+    <process name="m3ua_1"
+        path="${ENGINE_BASE}/bin:${TELESOFT_BASE}/bin"
+        dir="${ENGINE_BASE}/bin"
+        cmd="m3uaStack1.sh">
+    </process>
+
+    <process name="sccp_0" 
+	path="${ENGINE_BASE}/bin:${TELESOFT_BASE}/bin"
+	dir="${ENGINE_BASE}/bin"
+	cmd="sccpStack0.sh" >
+    </process>
+    <process name="sccp_1"
+        path="${ENGINE_BASE}/bin:${TELESOFT_BASE}/bin"
+        dir="${ENGINE_BASE}/bin"
+        cmd="sccpStack1.sh" >
+    </process>
+
+    <process name="sif_0"
+	path="${ENGINE_BASE}/bin"
+        dir="${ENGINE_BASE}/bin"
+	cmd="sif_0.sh" >
+    </process>
+    <process name="sif_1"
+        path="${ENGINE_BASE}/bin"
+        dir="${ENGINE_BASE}/bin"
+        cmd="sif_1.sh" >
+    </process>
+
+    <process name="mgmt_0"   
+	path="${ENGINE_BASE}/bin"
+        dir="${ENGINE_BASE}/bin"
+	cmd="mgmt-daemon0.sh" >
+    </process>
+    <process name="mgmt_1"
+        path="${ENGINE_BASE}/bin"
+        dir="${ENGINE_BASE}/bin"
+        cmd="mgmt-daemon1.sh" >
+    </process>
+
+</pmd>

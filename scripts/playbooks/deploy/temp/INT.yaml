@@ -1,0 +1,119 @@
+heat_template_version: 2015-04-30
+
+description: >
+   HOT template (Heat Orchestration Template) for EIINSIGHT
+
+###########################################
+# Parameters part
+###########################################
+
+Parameters:
+
+  name:
+    type: string
+    label: Name
+    description: Name of Instance
+
+  image_id:
+    type: string
+    label: Image ID
+    description: Image to be used for compute instance
+
+  flavor:
+    type: string
+    label: Instance Type
+    description: Type of instance (flavor) to be used
+
+  volume_id1:
+    type: string
+    label: Volume ID
+    description: Volume ID
+
+  volume_id2:
+    type: string
+    label: Volume ID2
+    description: Volume ID2
+
+  volume_id3:
+    type: string
+    label: Volume ID3
+    description: Volume ID3
+
+
+##########################################
+   # Network Ports
+#########################################
+
+  edn_port_id:
+    type: string
+    label: port details
+    description: port details for our instance .
+
+
+
+############################################
+   # Network Interfaces
+###########################################
+
+  edn_tenant_v6_IPV6_DEFAULTGW:
+    type: string
+    label: endv6 Gateway
+    description: Network gateway 
+    
+  edn_tenant_v6_fixed_ip:
+    type: string
+    label: ednv6 IP
+    description: private static IP
+
+
+
+#####################################
+## resources part
+######################################
+
+resources:
+  my_vm1:
+    type: OS::Nova::Server
+    properties:
+      name: { get_param: name }
+      image: { get_param: image_id }
+      flavor: { get_param: flavor }
+      config_drive: true
+      networks:
+        - port: { get_param: edn_port_id }
+      user_data_format: RAW
+      user_data:
+        str_replace:
+          template: |
+               #!/bin/sh
+               printf "DEVICE=eth0\nBOOTPROTO=static\nONBOOT=yes\nTYPE=Ethernet\nUSERCTL=no\nIPV6INIT=yes\nIPV6ADDR=$edn_tenant_v6_fixed_ip\nIPV6_DEFAULTGW=$edn_tenant_v6_IPV6_DEFAULTGW\n" > /etc/sysconfig/network-scripts/ifcfg-eth0
+               systemctl restart sshd
+               systemctl restart network
+
+          params:
+                $edn_tenant_v6_IPV6_DEFAULTGW: { get_param: edn_tenant_v6_IPV6_DEFAULTGW }
+                $edn_tenant_v6_fixed_ip: { get_param: edn_tenant_v6_fixed_ip } 
+
+
+#-------------------------------------------------------------------------------
+
+####################################
+# volume attachment part
+####################################
+  volume1_attachment:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_param: volume_id1 }
+      instance_uuid: { get_resource: my_vm1 }
+      
+  volume2_attachment:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_param: volume_id2 }
+      instance_uuid: { get_resource: my_vm1 }
+
+  volume3_attachment:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_param: volume_id3 }
+      instance_uuid: { get_resource: my_vm1 }

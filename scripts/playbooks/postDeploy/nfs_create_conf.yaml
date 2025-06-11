@@ -1,0 +1,32 @@
+- name: Set fact for {{ vm_name }}
+  set_fact:
+    config_vars: "{{ siteinfo[vm_name] }}"
+
+#- name: Creating {{ vm_name }}
+#  vars:
+#    vnf: "{{ vm_name[:-2] | lower }}"
+#  template:
+#    src: "{{ item }}"
+#    dest: /opt/engine/external/{{ vm_name }}/
+#    owner: roamware
+#    group: roamware
+#  with_fileglob:
+#    - ../artifacts/templates/config_{{ vnf }}/*
+#  loop_control:
+#    label: "{{ item | split('/') | last }}"
+
+
+- name: Creating {{ vm_name }}
+  vars:
+    vnf: "{{ vm_name[:-2] | lower }}"
+  template:
+    src: "{{ item }}"
+    dest: /opt/engine/external/{{ vm_name }}/
+    owner: eians
+    group: eians
+  with_fileglob:
+    - ../artifacts/templates/config_{{ vnf }}/*
+  loop_control:
+    label: "{{ item | split('/') | last }}"
+
+

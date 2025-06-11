@@ -1,0 +1,26 @@
+parameter_defaults:
+  # Environment variables for Heat template of SFWNFS server
+
+  # VM related parameters
+  name: NFS01
+  hostname: DAL-CH2-SFW-NFS01
+  flavor: HP16-32-160-0
+  image_id: NFS01_Image
+#  server_group: b2260ce1-6c48-4a59-b0c4-275c84f8dcd3
+  volume_id: afa1f765-43d7-4a67-9be4-b3683823cf00
+  availability_zone: nova
+
+  # Network Port
+  public_EDN_port: 154ef203-0031-48fb-8aa9-5b0a9060e6c1
+  private_port: 541ee458-5c07-40bf-aef3-714866af7567
+
+  # Network Interface
+  public_EDNv6_ip: 'fd69:93c1:8105:60e9:0000:0000:0000:0b12'
+  public_EDNv6_IPV6_DEFAULTGW: 'fd69:93c1:8105:60e9::1'
+  public_EDNv6_Netmask: 64
+  private_ip: 192.168.10.232
+  private_Netmask: 255.255.255.0
+  private_GATEWAY: 192.168.60.1
+  public_EDNv4_ip: 172.16.60.152
+  public_EDNv4_GATEWAY: 172.16.56.1
+  public_EDNv4_Netmask: 255.255.248.0

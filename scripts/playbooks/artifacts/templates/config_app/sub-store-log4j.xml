@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <!-- ************************************************************************** -->
+    <!-- *     EDR_FILE                                                           * -->
+    <!-- *                                                                        * -->
+    <!-- *  In the case where a RabbitMQ server is being used for EDRs then this  * -->
+    <!-- *  file is used as a backup when connection to the server is lost        * -->
+    <!-- ************************************************************************** -->
+    <appender name="EDR_FILE" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="${SUB_STORE_BASE_DIR}/logs/sub-store-edr-${SUB_STORE_NODE_ID}-${SUB_STORE_INSTANCE_ID}.log" />
+        <param name="DatePattern" value="'.'yyyy-MM-dd-HH-mm"/>
+        <param name="Append" value="true" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%m%n"/>
+        </layout>
+    </appender>
+
+    <!-- ************************************************************************** -->
+    <!-- *     STATS_FILE                                                         * -->
+    <!-- *                                                                        * -->
+    <!-- *  Subscriber store event statistics.                                    * -->
+    <!-- ************************************************************************** -->
+    <appender name="STATS_FILE" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="${SUB_STORE_BASE_DIR}/logs/sub-store-stats-${SUB_STORE_NODE_ID}-${SUB_STORE_INSTANCE_ID}.log" />
+        <param name="Append" value="true" />
+        <param name="MaxFileSize" value="10MB" />
+        <param name="MaxBackupIndex" value="3" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{dd/MM/yyyy HH:mm:ss.SSS zzz},%m%n"/>
+        </layout>
+    </appender>
+
+    <!-- ************************************************************************** -->
+    <!-- *     HAZELCAST_SUBSCRIBER_LOCATION_STORE_STATS_FILE                     * -->
+    <!-- *                                                                        * -->
+    <!-- *  Hazelcast subscriber location store statistics file                   * -->
+    <!-- ************************************************************************** -->
+    <appender name="HAZELCAST_SUBSCRIBER_LOCATION_STORE_STATS_FILE" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="${SUB_STORE_BASE_DIR}/logs/hazelcast_sub_store_stats-${SUB_STORE_NODE_ID}-${SUB_STORE_INSTANCE_ID}.log" />
+        <param name="Append" value="true" />
+        <param name="MaxFileSize" value="10MB" />
+        <param name="MaxBackupIndex" value="3" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{dd/MM/yyyy HH:mm:ss.SSS zzz},%m%n"/>
+        </layout>
+    </appender>
+
+    <!-- ************************************************************************** -->
+    <!-- *     HAZELCAST_MAP_ATI_RESULT_CACHE_STATS_FILE                          * -->
+    <!-- *                                                                        * -->
+    <!-- *  Hazelcast MAP ATI cache statistics file                               * -->
+    <!-- ************************************************************************** -->
+    <appender name="HAZELCAST_MAP_ATI_RESULT_CACHE_STATS_FILE" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="${SUB_STORE_BASE_DIR}/logs/hazelcast_sub_store_map_ati_cache_stats-${SUB_STORE_NODE_ID}-${SUB_STORE_INSTANCE_ID}.log" />
+        <param name="Append" value="true" />
+        <param name="MaxFileSize" value="10MB" />
+        <param name="MaxBackupIndex" value="3" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{dd/MM/yyyy HH:mm:ss.SSS zzz},%m%n"/>
+        </layout>
+    </appender>
+
+    <!-- ************************************************************************** -->
+    <!-- *     HAZELCAST_SMS_TRACKING_CACHE_STATS_FILE                            * -->
+    <!-- *                                                                        * -->
+    <!-- *  Hazelcast SMS Tracking cache statistics file                          * -->
+    <!-- ************************************************************************** -->
+    <appender name="HAZELCAST_SMS_TRACKING_CACHE_STATS_FILE" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="${SUB_STORE_BASE_DIR}/logs/hazelcast_sub_store_sms_tracking_cache_stats-${SUB_STORE_NODE_ID}-${SUB_STORE_INSTANCE_ID}.log" />
+        <param name="Append" value="true" />
+        <param name="MaxFileSize" value="10MB" />
+        <param name="MaxBackupIndex" value="3" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{dd/MM/yyyy HH:mm:ss.SSS zzz},%m%n"/>
+        </layout>
+    </appender>
+
+    <!-- ************************************************************************** -->
+    <!-- *     CONSOLE    -   Application Messages                                * -->
+    <!-- ************************************************************************** -->
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <param name="Target" value="System.out" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %c{1} %p - %m%n" />
+        </layout>
+    </appender>
+
+    <!-- ************************************************************************** -->
+    <!-- *     FILE       -   Application Messages                                * -->
+    <!-- ************************************************************************** -->
+    <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="${SUB_STORE_BASE_DIR}/logs/sub-store-${SUB_STORE_NODE_ID}-${SUB_STORE_INSTANCE_ID}.log" />
+        <param name="Append" value="true" />
+        <param name="MaxFileSize" value="20MB" />
+        <param name="MaxBackupIndex" value="20" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{dd/MM/yyyy HH:mm:ss,SSS} %c{1} %p - %m%n" />
+        </layout>
+    </appender>
+
+    <!-- ************************************************************************** -->
+    <!-- *     EDR.SUBSCRIBER_STORE_MESSAGE                                       * -->
+    <!-- *                                                                        * -->
+    <!-- *  Subscriber store event EDRs                                           * -->
+    <!-- ************************************************************************** -->
+    <logger name="EDR.SUBSCRIBER_STORE_MESSAGE" additivity="false">
+        <level value="info" />
+        <appender-ref ref="EDR_FILE" />
+    </logger>
+
+    <!-- ************************************************************************** -->
+    <!-- *     STATS.SUBSCRIBER_STORE                                             * -->
+    <!-- *                                                                        * -->
+    <!-- *  Signalling Firewall subscriber store events statistics                * -->
+    <!-- ************************************************************************** -->
+    <logger name="STATS.SUBSCRIBER_STORE" additivity="false">
+        <level value="info" />
+        <appender-ref ref="STATS_FILE" />
+    </logger>
+
+    <!-- ************************************************************************** -->
+    <!-- *     STATS.HAZELCAST_SUBSCRIBER_LOCATION_STORE                          * -->
+    <!-- *                                                                        * -->
+    <!-- *  Signalling Firewall hazelcast subscriber location store statistics    * -->
+    <!-- ************************************************************************** -->
+    <logger name="STATS.HAZELCAST_SUBSCRIBER_LOCATION_STORE" additivity="false">
+        <level value="info" />
+        <appender-ref ref="HAZELCAST_SUBSCRIBER_LOCATION_STORE_STATS_FILE" />
+    </logger>
+
+    <!-- ************************************************************************** -->
+    <!-- *     STATS.HAZELCAST_MAP_ATI_RESULT_CACHE                               * -->
+    <!-- *                                                                        * -->
+    <!-- *  Signalling Firewall hazelcast MAP ATI cache store statistics          * -->
+    <!-- ************************************************************************** -->
+    <logger name="STATS.HAZELCAST_MAP_ATI_RESULT_CACHE" additivity="false">
+        <level value="info" />
+        <appender-ref ref="HAZELCAST_MAP_ATI_RESULT_CACHE_STATS_FILE" />
+    </logger>
+
+    <!-- ************************************************************************** -->
+    <!-- *     STATS.HAZELCAST_SMS_TRACKING_CACHE                                 * -->
+    <!-- *                                                                        * -->
+    <!-- *  Signalling Firewall hazelcast SMS Tracking cache store statistics     * -->
+    <!-- ************************************************************************** -->
+    <logger name="STATS.HAZELCAST_SMS_TRACKING_CACHE" additivity="false">
+        <level value="info" />
+        <appender-ref ref="HAZELCAST_SMS_TRACKING_CACHE_STATS_FILE" />
+    </logger>
+
+    <!-- Specific rule for this module -->
+    <logger name="com.evolvedintelligence.engine.sigfirewall.substore" additivity="false">
+        <level value="info" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <!-- Specific rule for this EWOK messages -->
+    <logger name="com.evolvedintelligence.engine.ewok" additivity="false">
+        <level value="info" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <!-- Hazelcast -->
+    <logger name="com.hazelcast" additivity="false">
+        <level value="info"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <!-- Default rule for all classes -->
+    <root>
+        <level value="info"/>
+        <appender-ref ref="FILE" />
+    </root>
+
+</log4j:configuration>

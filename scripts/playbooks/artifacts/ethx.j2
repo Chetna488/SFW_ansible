@@ -1,0 +1,16 @@
+DEVICE={{ dev }}
+BOOTPROTO=static
+ONBOOT=yes
+TYPE=Ethernet
+USERCTL=no
+MTU=1500
+{% if ipv4 is defined %}
+IPADDR={{ ipv4 }}
+NETMASK={{ ipv4mask }}
+GATEWAY={{ ipv4gw }}
+{% endif %}
+{% if ipv6 is defined %}
+IPV6INIT=yes
+IPV6ADDR={{ ipv6 }}
+IPV6_DEFAULTGW={{ ipv6gw }}
+{% endif %}

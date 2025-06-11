@@ -1,0 +1,30 @@
+parameter_defaults:
+#Global
+  edn_tenant_v6_IPV6_DEFAULTGW:
+  edn_tenant_v4_GATEWAY:
+  edn_tenant_v4_Netmask:
+  ssn1_tenant_v4_GATEWAY:
+  ssn1_tenant_v4_Netmask:
+  ssn2_tenant_v4_GATEWAY:
+  ssn2_tenant_v4_Netmask:
+  ran_tenant_v6_IPV6_DEFAULTGW:
+  nfs_server:
+
+#VM specific
+  name:
+  hostname:
+  edn_tenant_v4_fixed_ip:
+  edn_tenant_v6_fixed_ip:
+  ssn1_tenant_v4_fixed_ip:
+  ssn2_tenant_v4_fixed_ip:
+  ran_tenant_v6_fixed_ip:
+  flavor:
+  image_id:
+  volume_id:
+  server_group:
+
+#Network Ports
+  edn_port_id:
+  ssn1_port_id:
+  ssn2_port_id:
+  ran_port_id:

@@ -1,0 +1,172 @@
+heat_template_version: 2015-04-30
+
+description: >
+   HOT template (Heat Orchestration Template) for NFS
+##################################################
+   # Parameters Part
+##################################################
+
+parameters:
+
+  name:
+    type: string
+    label: Name
+    description: Name of Instance
+
+  image_id:
+    type: string
+    label: Image ID
+    description: Image to be used for compute instance
+
+  flavor:
+    type: string
+    label: Instance Type
+    description: Type of instance (flavor) to be used
+
+  volume_id:
+    type: string
+    label: Volume ID
+    description: Volume ID .
+
+  
+ ##############################
+   # New Ports
+ ##############################
+
+  edn_port_id:
+    type: string
+    label: port details
+    description: port for our instance
+ 
+  private_port_id:
+    type: string
+    label: port details
+    description: port for our instance
+
+ #########################################
+    # Network Interface
+#########################################
+ 
+  edn_tenant_v6_fixed_ip:
+    type: string
+    label: fixed ip details
+    description: EDNv6 static IP
+
+
+  edn_tenant_v6_IPV6_DEFAULTGW:
+    type: string
+    label: edn IP gateway
+    description: NA
+
+  edn_tenant_EDNv6_Netmask:
+    type: string
+    label: EDN IP netmask
+    description: Network netmask
+
+
+  edn_tenant_v4_fixed_ip:
+    type: string
+    label: edn IPv4 fixed ip
+    description: private static IP
+
+
+  edn_tenant_v4_GATEWAY:
+    type: string
+    label: EDN IP gateway
+    description: Network gateway
+
+  edn_tenant_v4_Netmask:
+    type: string
+    label: EDN IP netmask
+    description: Network netmask
+
+    
+  private_ip:
+    type: string
+    label: privete IP
+    description: private IP
+
+  private_Netmask:
+    type: string
+    label: private netmask
+    description: NA
+
+  private_GATEWAY:
+    type: string
+    label: Private Gateway
+    description: Private Gateway
+
+#####################################
+## resources part
+######################################
+
+resources:
+  my_vm1:
+    type: OS::Nova::Server
+    properties:
+      name: { get_param: name }
+      image: { get_param: image_id }
+      flavor: { get_param: flavor }
+      config_drive: true
+      networks:
+        - port: { get_param: edn_port_id }
+        - port: { get_param: private_port_id }
+      user_data_format: RAW
+      user_data:
+        str_replace:
+          template: |
+            #!/bin/sh
+            # IP address configurations
+            nmcli con delete "System eth0"
+            nmcli con delete "System eth1"
+            nmcli con add type ethernet con-name "eth0" ifname eth0 connection.autoconnect yes ipv6.method manual ipv6.addresses "$edn_tenant_v6_fixed_ip/$edn_tenant_EDNv6_Netmask" gw6 "$edn_tenant_v6_IPV6_DEFAULTGW" 802-3-ethernet.mtu 1500
+            nmcli con modify eth0 ipv4.addresses "$edn_tenant_v4_fixed_ip/$edn_tenant_v4_Netmask" gw4 "$edn_tenant_v4_GATEWAY" ipv4.method manual            
+            nmcli con add type ethernet con-name "eth1" ifname eth1 connection.autoconnect yes ipv4.method manual ipv4.addresses "$private_ip/$private_Netmask" gw4 "$private_GATEWAY" 802-3-ethernet.mtu 1500 ipv6.method ignore ipv4.never-default yes
+
+            printf "[main]\ndns=none" > /etc/NetworkManager/conf.d/90-dns-none.conf
+            systemctl reload NetworkManager
+            systemctl restart NetworkManager
+
+            hostname $hostname
+            sed -i 's/PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+            printf "\nClientAliveInterval 120\nClientAliveCountMax 720\n" >> /etc/ssh/sshd_config
+            systemctl restart sshd
+
+
+          params:
+            # Common Network Interface
+            $edn_tenant_v6_fixed_ip: { get_param: edn_tenant_v6_fixed_ip }
+            $edn_tenant_v6_IPV6_DEFAULTGW: { get_param: edn_tenant_v6_IPV6_DEFAULTGW }
+            $edn_tenant_EDNv6_Netmask: { get_param: edn_tenant_EDNv6_Netmask }
+            $edn_tenant_v4_fixed_ip: { get_param: edn_tenant_v4_fixed_ip }
+            $edn_tenant_v4_GATEWAY: { get_param: edn_tenant_v4_GATEWAY }
+            $edn_tenant_v4_Netmask: { get_param: edn_tenant_v4_Netmask }
+            $private_ip: { get_param: private_ip }
+            $private_GATEWAY: { get_param: private_GATEWAY }
+            $private_Netmask: { get_param: private_Netmask }
+
+
+#-------------------------------------------------------------------------------
+
+####################################
+# volume attachment part
+####################################
+  volume_attachment:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_param: volume_id }
+      instance_uuid: { get_resource: my_vm1 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
