@@ -193,7 +193,7 @@ resources:
                 $edn_tenant_v4_GATEWAY: { get_param: edn_tenant_v4_GATEWAY}
                 $edn_tenant_v4_Netmask: { get_param: edn_tenant_v4_Netmask}
                 $edn_tenant_v6_IPV6_DEFAULTGW: {get_param: edn_tenant_v6_IPV6_DEFAULTGW}
-                $edn_tenant_EDNv6_Netmask}: {get_param: edn_tenant_EDNv6_Netmask}
+                $edn_tenant_EDNv6_Netmask: {get_param: edn_tenant_EDNv6_Netmask}
                 $edn_tenant_v6_fixed_ip: {get_param: edn_tenant_v6_fixed_ip}
                 $edn_tenant_v4_fixed_ip: {get_param: edn_tenant_v4_fixed_ip}
 
