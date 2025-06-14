@@ -4,7 +4,7 @@
 
 - name: Creating {{ vm_name }}
   vars:
-    vnf: "{{ vm_name[:-3] | lower }}"
+    vnf: "{{ vm_name[:-2] | lower }}"
   template:
     src: "{{ item }}"
     dest: /opt/engine/external/{{ vm_name }}/
