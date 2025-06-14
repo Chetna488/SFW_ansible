@@ -51,18 +51,18 @@
         checkNFS: true
       when: checkNFS is undefined
 
-#    - name: Get max num file
-#      vars:
-#        ansible_python_interpreter: /usr/bin/python
-#      fetch:
-#        src: /opt/engine/external/max_vm.ini
-#        dest: max_vm.ini
-#      register: location
-#      remote_user: roamware
-#      delegate_to: NFS01
-#      when: 
-#        - checkNFS == true
-#        - instantiation_params.vnf != 'NFS'
+    - name: Get max num file
+      vars:
+        ansible_python_interpreter: /usr/bin/python
+      fetch:
+        src: /opt/engine/external/max_vm.ini
+        dest: max_vm.ini
+      register: location
+      remote_user: roamware
+      delegate_to: NFS01
+      when: 
+        - checkNFS == true
+        - instantiation_params.vnf != 'NFS'
 
 #    - name: Create an empty file on remote server
 #      ansible.builtin.file:
@@ -76,16 +76,16 @@
 #        - instantiation_params.vnf != 'NFS'
 
 
-    - name: Get max num file
-      fetch:
-        src: /opt/engine/external/max_vm.ini
-        dest: max_vm.ini
-      register: location
-      remote_user: root
-      delegate_to: NFS01
-      when:
-        - checkNFS == true
-        - instantiation_params.vnf != 'NFS'
+#    - name: Get max num file
+#      fetch:
+#        src: /opt/engine/external/max_vm.ini
+#        dest: max_vm.ini
+#      register: location
+#      remote_user: root
+#      delegate_to: NFS01
+#      when:
+#        - checkNFS == true
+#        - instantiation_params.vnf != 'NFS'
 
     - name: Get max num value
       vars:
