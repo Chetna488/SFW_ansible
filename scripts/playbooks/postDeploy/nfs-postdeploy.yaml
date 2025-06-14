@@ -1,16 +1,4 @@
 ---
-# - name: Post deploy of NFS
-#   hosts: "{{ heat_env| map(attribute='parameter_defaults.name') | replace('-','')}}"
-#   gather_facts: false
-#   tasks:
-#     - name: Copy max_num
-#       ansible.builtin.copy:
-#         src: ../artifacts/max_vm.ini
-#         dest: /opt/engine/external
-#         owner: roamware
-#         group: roamware
-#         mode: '0644'
-
  - name: Post deploy of NFS
    hosts: "{{ heat_env| map(attribute='parameter_defaults.name') | replace('-','')}}"
    gather_facts: false
@@ -19,9 +7,21 @@
        ansible.builtin.copy:
          src: ../artifacts/max_vm.ini
          dest: /opt/engine/external
-         owner: eians
-         group: eians
+         owner: roamware
+         group: roamware
          mode: '0644'
+
+# - name: Post deploy of NFS
+#   hosts: "{{ heat_env| map(attribute='parameter_defaults.name') | replace('-','')}}"
+#   gather_facts: false
+#   tasks:
+#     - name: Copy max_num
+#       ansible.builtin.copy:
+#         src: ../artifacts/max_vm.ini
+#         dest: /opt/engine/external
+#         owner: eians
+#         group: eians
+#         mode: '0644'
 
  
      - name: Create Site configs on NFS
