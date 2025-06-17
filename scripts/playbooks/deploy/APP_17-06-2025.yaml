@@ -124,7 +124,14 @@ resources:
             nmcli con add type ethernet con-name "eth1" ifname eth1 connection.autoconnect yes ipv4.method manual ipv4.addresses "$private_ip/$private_Netmask" gw4 "$private_GATEWAY" 802-3-ethernet.mtu 1500 ipv6.method ignore ipv4.never-default yes
 
             printf "[main]\ndns=none" > /etc/NetworkManager/conf.d/90-dns-none.conf
+            systemctl reload NetworkManager
             systemctl restart NetworkManager
+
+            hostname $hostname
+            sed -i 's/PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+            printf "\nClientAliveInterval 120\nClientAliveCountMax 720\n" >> /etc/ssh/sshd_config
+            systemctl restart sshd
+
 
           params:
             # Common Network Interface
