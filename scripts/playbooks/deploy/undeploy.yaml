@@ -40,16 +40,16 @@
        set_fact:
          cur_num: "{{ stack_info | json_query(query)}}"
 
-     - name: Undeploy Stack if present
-       openstack.cloud.stack:
-         name: "{{ undeploy_params.vnf }}{{ '%03d' % undeploy_params.stack_number }}"
-         state: absent
-       when: undeploy_params.stack_number is defined
-
 #     - name: Undeploy Stack if present
 #       openstack.cloud.stack:
-#         name: "{{ name }}"
+#         name: "{{ undeploy_params.vnf }}{{ '%03d' % undeploy_params.stack_number }}"
 #         state: absent
-#       vars:
-#         name: "{{ undeploy_params.vnf }}{{ '%02d' % item|int }}"
-#       with_sequence: start=1 end={{cur_num}}
+#       when: undeploy_params.stack_number is defined
+
+     - name: Undeploy Stack if present
+       openstack.cloud.stack:
+         name: "{{ name }}"
+         state: absent
+       vars:
+         name: "{{ undeploy_params.vnf }}{{ '%02d' % item|int }}"
+       with_sequence: start=1 end={{cur_num}}

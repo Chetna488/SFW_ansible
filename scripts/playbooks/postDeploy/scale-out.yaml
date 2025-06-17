@@ -54,24 +54,14 @@
          set_fact:
            cur_num: "{{ stack_info | json_query(query)}}"
 
-#       - name: Get max num file
-#         vars:
-#           ansible_python_interpreter: /usr/bin/python
-#         fetch:
-#           src: /opt/engine/external/max_vm.ini
-#           dest: max_vm.ini
-#         register: location
-#         remote_user: roamware
-#         delegate_to: NFS01
-
        - name: Get max num file
-#         vars:
-#           ansible_python_interpreter: /usr/bin/python
+         vars:
+           ansible_python_interpreter: /usr/bin/python
          fetch:
            src: /opt/engine/external/max_vm.ini
            dest: max_vm.ini
          register: location
-         remote_user: root
+         remote_user: roamware
          delegate_to: NFS01
 
 
@@ -114,23 +104,11 @@
          openstack.cloud.stack:
            name: "{{ name }}"
            state: present
-           template: "../deploy/{{ name[:-3] }}.yaml"
+           template: "../deploy/{{ name[:-2] }}.yaml"
            environment:
              - "{{scaleout_params.sharedPath}}/{{name}}/env_{{name}}.yaml"
          with_items: "{{ envfile_list }}"
 
-
-#       - name: Deploy Stack
-#         vars:
-#           ansible_python_interpreter: /usr/bin/python3
-#           name: "{{ item.envfile|regex_search('env_(.*).yaml', '\\1')|first}}"
-#         openstack.cloud.stack:
-#           name: "{{ name }}"
-#           state: present
-#           template: "../deploy/{{ name[:-2] }}.yaml"
-#           environment:
-#             - "{{scaleout_params.sharedPath}}/{{name}}/env_{{name}}.yaml"
-#         with_items: "{{ envfile_list }}"
 
        - name: Set hosts for post-scaleout
          set_stats:

@@ -148,7 +148,7 @@
        openstack.cloud.stack:
          name: "{{ name }}"
          state: present
-         template: "{{ name[:-3] }}.yaml"
+         template: "{{ name[:-2] }}.yaml"
          environment:
            - "{{instantiation_params.sharedPath}}/{{name}}/env_{{name}}.yaml"
        with_items: "{{ envfile_list }}"
