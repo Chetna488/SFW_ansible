@@ -336,7 +336,7 @@
     become: yes
     become_method: sudo
     file:
-      path: "/root/config_drive_{{ parameter_defaults.name[:-3] | lower }}"
+      path: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}"
       state: directory
     when:
       - ('vnf_NFS' not in group_names)
@@ -399,15 +399,15 @@
     become_method: sudo
     copy:
       src: "{{ parameter_defaults.name }}.tgz"
-      dest: "/root/config_drive_{{ parameter_defaults.name[:-3] | lower }}"
+      dest: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}"
     when:
       - ('vnf_NFS' not in group_names)
       - ('vnf_RAID' not in group_names)
 
   - name: Extract {{ parameter_defaults.name }}.tgz into application directory
     ansible.builtin.unarchive:
-      src: "/root/config_drive_{{ parameter_defaults.name[:-3] | lower }}/{{ parameter_defaults.name }}.tgz"
-      dest: "/root/config_drive_{{ parameter_defaults.name[:-3] | lower }}"
+      src: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}/{{ parameter_defaults.name }}.tgz"
+      dest: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}"
       remote_src: yes
     when:
       - ('vnf_NFS' not in group_names)
@@ -416,7 +416,7 @@
 
   - name: Remove {{ parameter_defaults.name }}.tgz from application directory
     file:
-      path: "/root/config_drive_{{ parameter_defaults.name[:-3] | lower }}/{{ parameter_defaults.name }}.tgz"
+      path: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}/{{ parameter_defaults.name }}.tgz"
       state: absent
     delegate_to: "{{ parameter_defaults.name }}"
     when:
@@ -428,7 +428,7 @@
     become: true
     become_user: root
     file:
-      path: "/root/config_drive_{{ parameter_defaults.name[:-3] | lower }}_temp"
+      path: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}_temp"
       state: directory
     when:
       - ('vnf_NFS' not in group_names)
@@ -439,8 +439,8 @@
     become: true
     become_method: sudo
     copy:
-      src: "/root/config_drive_{{ parameter_defaults.name[:-3] | lower }}/"
-      dest: "/root/config_drive_{{ parameter_defaults.name[:-3] | lower }}_temp"
+      src: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}/"
+      dest: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}_temp"
       remote_src: yes
     when: 
       - ('vnf_NFS' not in group_names)
@@ -470,7 +470,7 @@
   - name: Run user-settings script
     become: true
     become_user: root
-    shell: "bash /root/config_drive_{{ parameter_defaults.name[:-3] | lower }}/{{ parameter_defaults.name }}/user-settings.sh /root/config_drive_{{ parameter_defaults.name[:-3] | lower }}"
+    shell: "bash /root/config_drive_{{ parameter_defaults.name[:-2] | lower }}/{{ parameter_defaults.name }}/user-settings.sh /root/config_drive_{{ parameter_defaults.name[:-2] | lower }}"
     when: 
       - ('vnf_NFS' not in group_names)
       - ('vnf_RAID' not in group_names)
@@ -486,7 +486,7 @@
   - name: Run apply config script
     become: true
     become_user: root
-    shell: "bash /root/config_drive_{{ parameter_defaults.name[:-3] | lower }}/{{ parameter_defaults.name }}/apply_config_{{ parameter_defaults.name[:-3] | lower }}.sh"
+    shell: "bash /root/config_drive_{{ parameter_defaults.name[:-2] | lower }}/{{ parameter_defaults.name }}/apply_config_{{ parameter_defaults.name[:-2] | lower }}.sh"
     when:
       - ('vnf_NFS' not in group_names)
       - ('vnf_RAID' not in group_names)
@@ -499,7 +499,7 @@
   - name: Remove application directory
     become: true
     file:
-      path: "/root/config_drive_{{ parameter_defaults.name[:-3] | lower }}"
+      path: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}"
       state: absent
     when:
       - ('vnf_NFS' not in group_names)
