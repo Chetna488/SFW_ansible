@@ -52,8 +52,8 @@
       when: checkNFS is undefined
 
     - name: Get max num file
-      vars:
-        ansible_python_interpreter: /usr/bin/python
+ #     vars:
+ #       ansible_python_interpreter: /usr/bin/python
       fetch:
         src: /opt/engine/external/max_vm.ini
         dest: max_vm.ini
