@@ -80,7 +80,6 @@ resources:
             #!/bin/sh
             # IP address configurations
             nmcli con delete "System eth0"
-            nmcli con delete "System eth1"
             nmcli con add type ethernet con-name "eth0" ifname eth0 connection.autoconnect yes ipv6.method manual ipv6.addresses "$edn_tenant_v6_fixed_ip/$edn_tenant_EDNv6_Netmask" gw6 "$edn_tenant_v6_IPV6_DEFAULTGW" 802-3-ethernet.mtu 1500
 
             printf "[main]\ndns=none" > /etc/NetworkManager/conf.d/90-dns-none.conf
