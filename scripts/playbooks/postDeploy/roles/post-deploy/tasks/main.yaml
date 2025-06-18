@@ -467,13 +467,13 @@
       state: restarted
 
 
-  - name: Run user-settings script
-    become: true
-    become_user: root
-    shell: "bash /root/config_drive_{{ parameter_defaults.name[:-2] | lower }}/{{ parameter_defaults.name }}/user-settings.sh /root/config_drive_{{ parameter_defaults.name[:-2] | lower }}"
-    when: 
-      - ('vnf_NFS' not in group_names)
-      - ('vnf_RAID' not in group_names)
+#  - name: Run user-settings script
+#    become: true
+#    become_user: root
+#    shell: "bash /root/config_drive_{{ parameter_defaults.name[:-2] | lower }}/{{ parameter_defaults.name }}/user-settings.sh /root/config_drive_{{ parameter_defaults.name[:-2] | lower }}"
+#    when: 
+#      - ('vnf_NFS' not in group_names)
+#      - ('vnf_RAID' not in group_names)
 
   - name: Run client setup script
     become: true
@@ -483,13 +483,13 @@
       - ('vnf_NFS' not in group_names)
       - ('vnf_RAID' not in group_names)
 
-  - name: Run apply config script
-    become: true
-    become_user: root
-    shell: "bash /root/config_drive_{{ parameter_defaults.name[:-2] | lower }}/{{ parameter_defaults.name }}/apply_config_{{ parameter_defaults.name[:-2] | lower }}.sh"
-    when:
-      - ('vnf_NFS' not in group_names)
-      - ('vnf_RAID' not in group_names)
+#  - name: Run apply config script
+#    become: true
+#    become_user: root
+#    shell: "bash /root/config_drive_{{ parameter_defaults.name[:-2] | lower }}/{{ parameter_defaults.name }}/apply_config_{{ parameter_defaults.name[:-2] | lower }}.sh"
+#    when:
+#      - ('vnf_NFS' not in group_names)
+#      - ('vnf_RAID' not in group_names)
 
 
   - name: Set the hostname
