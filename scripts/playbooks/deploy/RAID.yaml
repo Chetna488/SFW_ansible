@@ -90,6 +90,9 @@ resources:
 
             printf "[main]\ndns=none" > /etc/NetworkManager/conf.d/90-dns-none.conf
             systemctl restart NetworkManager
+            sed -i 's/PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+            systemctl restart sshd
+
 
 
           params:
