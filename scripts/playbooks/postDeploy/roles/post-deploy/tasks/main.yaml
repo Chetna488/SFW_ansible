@@ -332,55 +332,55 @@
 #      - ('vnf_NFS' not in group_names)
 #      - ('vnf_RAID' not in group_names)
 
-  - name: Create application directory
-    become: yes
-    become_method: sudo
-    file:
-      path: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}"
-      state: directory
-    when:
-      - ('vnf_NFS' not in group_names)
-      - ('vnf_RAID' not in group_names)
+#  - name: Create application directory
+#    become: yes
+#    become_method: sudo
+#    file:
+#      path: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}"
+#      state: directory
+#    when:
+#      - ('vnf_NFS' not in group_names)
+#      - ('vnf_RAID' not in group_names)
 
 
-  - name: Compress VM instance Configuration Directory on server
-    community.general.archive:
-      path: /opt/engine/external/{{ parameter_defaults.name }}
-      dest: /opt/engine/external/{{ parameter_defaults.name }}.tgz
-    vars:
-      ansible_ssh_user: '{{ nfs_user }}'
-      ansible_ssh_pass: '{{ nfs_password }}'
-    delegate_to: NFS01
-    when: 
-      - ('vnf_NFS' not in group_names)
-      - ('vnf_RAID' not in group_names)
+#  - name: Compress VM instance Configuration Directory on server
+#    community.general.archive:
+#      path: /opt/engine/external/{{ parameter_defaults.name }}
+#      dest: /opt/engine/external/{{ parameter_defaults.name }}.tgz
+#    vars:
+#      ansible_ssh_user: '{{ nfs_user }}'
+#      ansible_ssh_pass: '{{ nfs_password }}'
+#    delegate_to: NFS01
+#    when: 
+#      - ('vnf_NFS' not in group_names)
+#      - ('vnf_RAID' not in group_names)
 
-  - name: Fetch compressed VM Configuration file from the Server
-    fetch:
-      src=/opt/engine/external/{{ parameter_defaults.name }}.tgz
-      dest={{ parameter_defaults.name }}.tgz
-      flat=yes
-    remote_user: roamware
-    vars:
-      ansible_ssh_user: '{{ nfs_user }}'
-      ansible_ssh_pass: '{{ nfs_password }}'
-    delegate_to: NFS01
-    when:
-      - ('vnf_RAID' not in group_names)
-      - ('vnf_NFS' not in group_names)
+#  - name: Fetch compressed VM Configuration file from the Server
+#    fetch:
+#      src=/opt/engine/external/{{ parameter_defaults.name }}.tgz
+#      dest={{ parameter_defaults.name }}.tgz
+#      flat=yes
+#    remote_user: roamware
+#    vars:
+#      ansible_ssh_user: '{{ nfs_user }}'
+#      ansible_ssh_pass: '{{ nfs_password }}'
+#    delegate_to: NFS01
+#    when:
+#      - ('vnf_RAID' not in group_names)
+#      - ('vnf_NFS' not in group_names)
 
 
-  - name: Remove compressed file from server
-    file:
-      path: /opt/engine/external/{{ parameter_defaults.name }}.tgz
-      state: absent
-    vars:
-      ansible_ssh_user: '{{ nfs_user }}'
-      ansible_ssh_pass: '{{ nfs_password }}'
-    delegate_to: NFS01
-    when:
-      - ('vnf_NFS' not in group_names)
-      - ('vnf_RAID' not in group_names)
+#  - name: Remove compressed file from server
+#    file:
+#      path: /opt/engine/external/{{ parameter_defaults.name }}.tgz
+#      state: absent
+#    vars:
+#      ansible_ssh_user: '{{ nfs_user }}'
+#      ansible_ssh_pass: '{{ nfs_password }}'
+#    delegate_to: NFS01
+#    when:
+#      - ('vnf_NFS' not in group_names)
+#      - ('vnf_RAID' not in group_names)
 
 
 #  - name: Copy file to application directory
@@ -394,57 +394,57 @@
 #      - ('vnf_RAID' not in group_names)
 
 
-  - name: Copy file to application directory
-    become: yes
-    become_method: sudo
-    copy:
-      src: "{{ parameter_defaults.name }}.tgz"
-      dest: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}"
-    when:
-      - ('vnf_NFS' not in group_names)
-      - ('vnf_RAID' not in group_names)
+#  - name: Copy file to application directory
+#    become: yes
+#    become_method: sudo
+#    copy:
+#      src: "{{ parameter_defaults.name }}.tgz"
+#      dest: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}"
+#    when:
+#      - ('vnf_NFS' not in group_names)
+#      - ('vnf_RAID' not in group_names)
 
-  - name: Extract {{ parameter_defaults.name }}.tgz into application directory
-    ansible.builtin.unarchive:
-      src: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}/{{ parameter_defaults.name }}.tgz"
-      dest: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}"
-      remote_src: yes
-    when:
-      - ('vnf_NFS' not in group_names)
-      - ('vnf_RAID' not in group_names)
-
-
-  - name: Remove {{ parameter_defaults.name }}.tgz from application directory
-    file:
-      path: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}/{{ parameter_defaults.name }}.tgz"
-      state: absent
-    delegate_to: "{{ parameter_defaults.name }}"
-    when:
-      - ('vnf_NFS' not in group_names)
-      - ('vnf_RAID' not in group_names)
+#  - name: Extract {{ parameter_defaults.name }}.tgz into application directory
+#    ansible.builtin.unarchive:
+#      src: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}/{{ parameter_defaults.name }}.tgz"
+#      dest: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}"
+#      remote_src: yes
+#    when:
+#      - ('vnf_NFS' not in group_names)
+#      - ('vnf_RAID' not in group_names)
 
 
-  - name: create a temp Directory 
-    become: true
-    become_user: root
-    file:
-      path: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}_temp"
-      state: directory
-    when:
-      - ('vnf_NFS' not in group_names)
-      - ('vnf_RAID' not in group_names)
+#  - name: Remove {{ parameter_defaults.name }}.tgz from application directory
+#    file:
+#      path: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}/{{ parameter_defaults.name }}.tgz"
+#      state: absent
+#    delegate_to: "{{ parameter_defaults.name }}"
+#    when:
+#      - ('vnf_NFS' not in group_names)
+#      - ('vnf_RAID' not in group_names)
+
+
+#  - name: create a temp Directory 
+#    become: true
+#    become_user: root
+#    file:
+#      path: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}_temp"
+#      state: directory
+#    when:
+#      - ('vnf_NFS' not in group_names)
+#      - ('vnf_RAID' not in group_names)
 
        
-  - name: copy all the content to temp directory
-    become: true
-    become_method: sudo
-    copy:
-      src: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}/"
-      dest: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}_temp"
-      remote_src: yes
-    when: 
-      - ('vnf_NFS' not in group_names)
-      - ('vnf_RAID' not in group_names)
+#  - name: copy all the content to temp directory
+#    become: true
+#    become_method: sudo
+#    copy:
+#      src: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}/"
+#      dest: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}_temp"
+#      remote_src: yes
+#    when: 
+#      - ('vnf_NFS' not in group_names)
+#      - ('vnf_RAID' not in group_names)
 
 
   - name: disable ipv6 
@@ -496,12 +496,12 @@
     ansible.builtin.hostname:
       name: "{{ parameter_defaults.hostname }}"
 
-  - name: Remove application directory
-    become: true
-    file:
-      path: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}"
-      state: absent
-    when:
-      - ('vnf_NFS' not in group_names)
-      - ('vnf_RAID' not in group_names)
+#  - name: Remove application directory
+#    become: true
+#    file:
+#      path: "/root/config_drive_{{ parameter_defaults.name[:-2] | lower }}"
+#      state: absent
+#    when:
+#      - ('vnf_NFS' not in group_names)
+#      - ('vnf_RAID' not in group_names)
 
